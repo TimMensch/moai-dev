@@ -309,9 +309,6 @@
     <ClCompile Include="..\..\src\moaicore\MOAIMesh.cpp">
       <Filter>src\deck</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\moaicore\MOAIParser.cpp">
-      <Filter>src\util</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\moaicore\MOAIDebugLines.cpp">
       <Filter>src\gfx</Filter>
     </ClCompile>
@@ -886,9 +883,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\moaicore\MOAIMesh.h">
       <Filter>src\deck</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\moaicore\MOAIParser.h">
-      <Filter>src\util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\moaicore\MOAIDebugLines.h">
       <Filter>src\gfx</Filter>

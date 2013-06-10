@@ -333,7 +333,6 @@
     <ClCompile Include="..\..\src\moaicore\MOAIMutex_posix.cpp" />
     <ClCompile Include="..\..\src\moaicore\MOAIMutex_win32.cpp" />
     <ClCompile Include="..\..\src\moaicore\MOAIObject.cpp" />
-    <ClCompile Include="..\..\src\moaicore\MOAIParser.cpp" />
     <ClCompile Include="..\..\src\moaicore\MOAIParticleCallbackPlugin.cpp" />
     <ClCompile Include="..\..\src\moaicore\MOAIParticleDistanceEmitter.cpp" />
     <ClCompile Include="..\..\src\moaicore\MOAIParticleEmitter.cpp" />
@@ -528,7 +527,6 @@
     <ClInclude Include="..\..\src\moaicore\MOAIMutex_posix.h" />
     <ClInclude Include="..\..\src\moaicore\MOAIMutex_win32.h" />
     <ClInclude Include="..\..\src\moaicore\MOAIObject.h" />
-    <ClInclude Include="..\..\src\moaicore\MOAIParser.h" />
     <ClInclude Include="..\..\src\moaicore\MOAIParticle.h" />
     <ClInclude Include="..\..\src\moaicore\MOAIParticleCallbackPlugin.h" />
     <ClInclude Include="..\..\src\moaicore\MOAIParticleDistanceEmitter.h" />
@@ -637,12 +635,6 @@
     <ClInclude Include="..\..\src\moaicore\shaders\MOAIMeshShader-vsh.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\box2d\box2d.vcxproj">
-      <Project>{ab0dd232-1af9-4b16-a0f2-5ebf32250f6b}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\chipmunk\chipmunk.vcxproj">
-      <Project>{2c12ae60-0d24-4200-99bb-cb49cba3003f}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\contrib\contrib.vcxproj">
       <Project>{99205e3d-39d0-4a0e-991d-8f573966f165}</Project>
     </ProjectReference>
