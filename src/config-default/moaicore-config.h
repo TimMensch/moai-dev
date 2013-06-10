@@ -2,11 +2,11 @@
 #define MOAICORE_CONFIG_H
 
 #ifndef USE_BOX2D
-	#define USE_BOX2D 1
+	#define USE_BOX2D 0
 #endif
 
 #ifndef USE_CHIPMUNK
-	#define USE_CHIPMUNK 1
+	#define USE_CHIPMUNK 0
 #endif
 
 #ifndef USE_CURL
