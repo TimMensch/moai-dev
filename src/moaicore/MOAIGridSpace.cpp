@@ -245,7 +245,7 @@ int MOAIGridSpace::_initHexGrid ( lua_State* L ) {
     if (hRad<0)
     {
 		hRad = -hRad;
-        self->mShape = HEX_ROW_SHAPE;
+        self->mShape = HEX_COLUMN_SHAPE;
 		tileWidth = hRad * 6.0f /2;
 		tileHeight = hRad * ( float )( M_SQRT3 * 2.0 );
 		self->mCellWidth = tileWidth;
@@ -257,7 +257,7 @@ int MOAIGridSpace::_initHexGrid ( lua_State* L ) {
     {
         self->mShape = HEX_SHAPE;
 
-		tileWidth = hRad * 6.0f /2;
+		tileWidth = hRad * 6.0f ;
 		tileHeight = hRad * ( float )( M_SQRT3 * 2.0 );
 		self->mCellWidth = tileWidth;
 		self->mCellHeight = tileHeight * 0.5f;
@@ -267,7 +267,6 @@ int MOAIGridSpace::_initHexGrid ( lua_State* L ) {
 
 	self->mWidth = width;
 	self->mHeight = height;
-
 
 	self->mTileWidth = ( hRad * 4.0f ) - xGutter;
 	self->mTileHeight = tileHeight - yGutter;
@@ -706,8 +705,8 @@ MOAICellCoord MOAIGridSpace::GetCellCoord ( float x, float y ) const {
 		case HEX_SHAPE:
 			return this->GetHexCellCoord ( x, y, 2.0f, 10.0f );
 
-        case HEX_ROW_SHAPE:
-            return this->GetHexCellRowCoord ( x, y, 2.0f, 10.0f );
+        case HEX_COLUMN_SHAPE:
+            return this->GetHexCellColumnCoord ( x, y, -1.0f, 4.0f );
 
 		case OBLIQUE_SHAPE:
 			return this->GetObliqueCellCoord ( x, y );
@@ -804,9 +803,6 @@ MOAICellCoord MOAIGridSpace::GetHexCellCoord ( float x, float y, float a, float 
 	float xLocal = ( xUnit - ( float )xTile ) * ( a + b );
 	float yLocal = (( yUnit - ( float )yTile ) * 2.0f ) - 1.0f;
 
-	printf("local: %f,%f (%f) t: %d,%d loc: %f,%f\n",
-		xLocal,yLocal,xLocal-b,xTile,yTile,x,y);
-
 	// check the position of the coord depending on tile quadrant
 	// offset the tile index if out of bounds on any corner
 	if ( xLocal < ( a + 1.0f )) {
@@ -840,7 +836,8 @@ MOAICellCoord MOAIGridSpace::GetHexCellCoord ( float x, float y, float a, float 
 	return cellCoord;
 }
 
-MOAICellCoord MOAIGridSpace::GetHexCellRowCoord ( float x, float y, float a, float b ) const {
+// Math is different for this topology.
+MOAICellCoord MOAIGridSpace::GetHexCellColumnCoord ( float x, float y, float a, float b ) const {
 
 	// get the coord in tiles
 	float xUnit = ( x / this->mCellWidth );
@@ -855,7 +852,7 @@ MOAICellCoord MOAIGridSpace::GetHexCellRowCoord ( float x, float y, float a, flo
 	bool odd = false;
 
 	// need to offset y for odd rows
-	if  ( false && (xTile & 0x01) ) {
+	if  ( xTile & 0x01 ) {
 		yUnit -= 0.5f;
 		stepUp = 1;
 		stepDown = 0;
@@ -865,43 +862,37 @@ MOAICellCoord MOAIGridSpace::GetHexCellRowCoord ( float x, float y, float a, flo
 	// get the y tile index
 	int yTile = ( int )floorf ( yUnit );
 
-	xTile = yTile = 0 ;
-
 	// now get the local coord
 	float xLocal = ( xUnit - ( float )xTile ) * ( a + b );
 	float yLocal = (( yUnit - ( float )yTile ) * 2.0f ) - 1.0f;
 
-	printf("local: %f,%f (%f) t: %d,%d loc: %f,%f %s\n",
-		xLocal,yLocal,xLocal-b,xTile,yTile,x,y,odd?"odd":"even");
+//	printf("local: %f,%f (%f) u:%f,%f t: %d,%d loc: %f,%f %s\n",
+//		xLocal,yLocal,xLocal-b,xUnit,yUnit,xTile,yTile,x,y,odd?"odd":"even");
 
 	// check the position of the coord depending on tile quadrant
 	// offset the tile index if out of bounds on any corner
-	if ( xLocal < ( a + 1.0f )) {
-
+	if ( xLocal < -a ) {
 		if ( yLocal < 0.0f ) {
-			if ( yLocal < ( a - xLocal )) {
-//				xTile = xTile - 1 ;
-//				yTile = yTile + stepDown ;
+			if ( yLocal < -xLocal ) {
+				xTile = xTile - 1 ;
+				yTile = yTile + stepDown ;
 			}
 		}
-		else if ( yLocal > ( xLocal - a )) {
-//			xTile = xTile - 1;
-//			yTile = yTile + stepUp;
+		else if ( yLocal > xLocal) {
+			xTile = xTile - 1;
+			yTile = yTile + stepUp;
 		}
 	}
 	else if ( xLocal > ( b - 1.0f )) {
-        printf("xLocal > ( b - 1.0f )\n");
-
 		if ( yLocal < 0.0f ) {
 			if ( yLocal < ( xLocal - b )) {
-                printf("yLocal < ( %f ) \n",xLocal-b);
 				xTile = xTile + 1;
 				yTile = yTile + stepDown;
 			}
 		}
 		else if ( yLocal > ( b - xLocal )) {
-//			xTile = xTile + stepUp;
-//			yTile = yTile + 1;
+			xTile = xTile + 1;
+			yTile = yTile + stepUp;
 		}
 	}
 
@@ -1152,7 +1143,7 @@ void MOAIGridSpace::RegisterLuaClass ( MOAILuaState& state ) {
 	state.SetField ( -1, "DIAMOND_SHAPE", DIAMOND_SHAPE );
 	state.SetField ( -1, "OBLIQUE_SHAPE", OBLIQUE_SHAPE );
 	state.SetField ( -1, "HEX_SHAPE", HEX_SHAPE );
-	state.SetField ( -1, "HEX_ROW_SHAPE", HEX_ROW_SHAPE );
+	state.SetField ( -1, "HEX_ROW_SHAPE", HEX_COLUMN_SHAPE );
 }
 
 //----------------------------------------------------------------//

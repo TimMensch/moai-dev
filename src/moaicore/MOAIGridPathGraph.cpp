@@ -238,7 +238,7 @@ void MOAIGridPathGraph::PushNeighbors ( MOAIPathFinder& pathFinder, int nodeID )
 
 			break;
 		}
-        case MOAIGridSpace::HEX_ROW_SHAPE: {
+        case MOAIGridSpace::HEX_COLUMN_SHAPE: {
 
             // all costs on a hex board are one
             params.mHCost = 1;//this->mGrid->GetCellWidth ();
