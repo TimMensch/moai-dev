@@ -250,6 +250,8 @@ int MOAIGridSpace::_initHexGrid ( lua_State* L ) {
 		tileHeight = hRad * ( float )( M_SQRT3 * 2.0 );
 		self->mCellWidth = tileWidth;
 		self->mCellHeight = tileHeight;
+        self->mXOff = ( xGutter * 0.5f );
+        self->mYOff = ( yGutter * 0.5f );
 	}
     else
     {
@@ -259,13 +261,13 @@ int MOAIGridSpace::_initHexGrid ( lua_State* L ) {
 		tileHeight = hRad * ( float )( M_SQRT3 * 2.0 );
 		self->mCellWidth = tileWidth;
 		self->mCellHeight = tileHeight * 0.5f;
+        self->mXOff = hRad + ( xGutter * 0.5f );
+        self->mYOff = ( yGutter * 0.5f ) - ( tileHeight * 0.25f );
 	}
 
 	self->mWidth = width;
 	self->mHeight = height;
 
-	self->mXOff = hRad + ( xGutter * 0.5f );
-	self->mYOff = ( yGutter * 0.5f ) - ( tileHeight * 0.25f );
 
 	self->mTileWidth = ( hRad * 4.0f ) - xGutter;
 	self->mTileHeight = tileHeight - yGutter;
@@ -802,6 +804,9 @@ MOAICellCoord MOAIGridSpace::GetHexCellCoord ( float x, float y, float a, float 
 	float xLocal = ( xUnit - ( float )xTile ) * ( a + b );
 	float yLocal = (( yUnit - ( float )yTile ) * 2.0f ) - 1.0f;
 
+	printf("local: %f,%f (%f) t: %d,%d loc: %f,%f\n",
+		xLocal,yLocal,xLocal-b,xTile,yTile,x,y);
+
 	// check the position of the coord depending on tile quadrant
 	// offset the tile index if out of bounds on any corner
 	if ( xLocal < ( a + 1.0f )) {
@@ -844,26 +849,30 @@ MOAICellCoord MOAIGridSpace::GetHexCellRowCoord ( float x, float y, float a, flo
 	// get the x tile index
 	int xTile = ( int )floorf ( xUnit );
 
-	int stepRight = 1;
-	int stepLeft = -1;
+	int stepUp = 0;
+	int stepDown = -1;
 
 	bool odd = false;
 
 	// need to offset y for odd rows
-	if ( xTile & 0x01 ) {
+	if  ( false && (xTile & 0x01) ) {
 		yUnit -= 0.5f;
+		stepUp = 1;
+		stepDown = 0;
 		odd = true;
 	}
 
 	// get the y tile index
 	int yTile = ( int )floorf ( yUnit );
 
+	xTile = yTile = 0 ;
+
 	// now get the local coord
 	float xLocal = ( xUnit - ( float )xTile ) * ( a + b );
 	float yLocal = (( yUnit - ( float )yTile ) * 2.0f ) - 1.0f;
 
-	printf("loc: %f,%f t: %d,%d loc: %f,%f %s : ",
-		xLocal,yLocal,xTile,yTile,x,y,odd?"odd":"even");
+	printf("local: %f,%f (%f) t: %d,%d loc: %f,%f %s\n",
+		xLocal,yLocal,xLocal-b,xTile,yTile,x,y,odd?"odd":"even");
 
 	// check the position of the coord depending on tile quadrant
 	// offset the tile index if out of bounds on any corner
@@ -871,25 +880,27 @@ MOAICellCoord MOAIGridSpace::GetHexCellRowCoord ( float x, float y, float a, flo
 
 		if ( yLocal < 0.0f ) {
 			if ( yLocal < ( a - xLocal )) {
-//				xTile = xTile + stepLeft;
-//				yTile = yTile - 1;
+//				xTile = xTile - 1 ;
+//				yTile = yTile + stepDown ;
 			}
 		}
 		else if ( yLocal > ( xLocal - a )) {
-//			xTile = xTile + stepLeft;
-//			yTile = yTile + 1;
+//			xTile = xTile - 1;
+//			yTile = yTile + stepUp;
 		}
 	}
 	else if ( xLocal > ( b - 1.0f )) {
+        printf("xLocal > ( b - 1.0f )\n");
 
 		if ( yLocal < 0.0f ) {
 			if ( yLocal < ( xLocal - b )) {
-//				xTile = xTile + stepRight;
-//				yTile = yTile - 1;
+                printf("yLocal < ( %f ) \n",xLocal-b);
+				xTile = xTile + 1;
+				yTile = yTile + stepDown;
 			}
 		}
 		else if ( yLocal > ( b - xLocal )) {
-//			xTile = xTile + stepRight;
+//			xTile = xTile + stepUp;
 //			yTile = yTile + 1;
 		}
 	}
