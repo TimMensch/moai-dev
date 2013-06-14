@@ -233,37 +233,69 @@ int MOAIGridSpace::_initHexGrid ( lua_State* L ) {
 
 	u32 width			= state.GetValue < u32 >( 2, 0 );
 	u32 height			= state.GetValue < u32 >( 3, 0 );
+	
+	float hRad			= state.GetValue < float >( 4, 1.0f ) * 0.5f;
+
+	float xGutter		= state.GetValue < float >( 5, 0.0f );
+	float yGutter		= state.GetValue < float >( 6, 0.0f );
+
+	float tileWidth = hRad * 6.0f;
+	float tileHeight = hRad * ( float )( M_SQRT3 * 2.0 );
+
+	self->mShape = HEX_SHAPE;
+
+	self->mWidth = width;
+	self->mHeight = height;
+	
+	self->mCellWidth = tileWidth;
+	self->mCellHeight = tileHeight * 0.5f;
+	
+	self->mXOff = hRad + ( xGutter * 0.5f );
+	self->mYOff = ( yGutter * 0.5f ) - ( tileHeight * 0.25f );
+	
+	self->mTileWidth = ( hRad * 4.0f ) - xGutter;
+	self->mTileHeight = tileHeight - yGutter;
+	
+	self->OnResize ();
+	
+	return 0;
+}
+
+//----------------------------------------------------------------//
+/**	@name	initHexColumnGrid
+    @text	Initialize a grid with hexagonal tiles. A "column grid"
+    		is addressed by contiguous columns instead of by
+    		double-width columns with a stagger.
+
+	@in		MOAIGridSpace self
+	@in		number width
+	@in		number height
+	@opt	number radius			Default value is 1.
+	@opt	number xGutter			Default value is 0.
+	@opt	number yGutter			Default value is 0.
+	@out	nil
+*/
+int MOAIGridSpace::_initHexColumnGrid ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIGridSpace, "UNN" )
+
+
+	u32 width			= state.GetValue < u32 >( 2, 0 );
+	u32 height			= state.GetValue < u32 >( 3, 0 );
 
 	float hRad			= state.GetValue < float >( 4, 1.0f ) * 0.5f;
 
 	float xGutter		= state.GetValue < float >( 5, 0.0f );
 	float yGutter		= state.GetValue < float >( 6, 0.0f );
 
-    float tileWidth ;
-    float tileHeight ;
+    float tileWidth, tileHeight;
 
-    if (hRad<0)
-    {
-		hRad = -hRad;
-        self->mShape = HEX_COLUMN_SHAPE;
-		tileWidth = hRad * 6.0f /2;
-		tileHeight = hRad * ( float )( M_SQRT3 * 2.0 );
-		self->mCellWidth = tileWidth;
-		self->mCellHeight = tileHeight;
-        self->mXOff = ( xGutter * 0.5f );
-        self->mYOff = ( yGutter * 0.5f );
-	}
-    else
-    {
-        self->mShape = HEX_SHAPE;
-
-		tileWidth = hRad * 6.0f ;
-		tileHeight = hRad * ( float )( M_SQRT3 * 2.0 );
-		self->mCellWidth = tileWidth;
-		self->mCellHeight = tileHeight * 0.5f;
-        self->mXOff = hRad + ( xGutter * 0.5f );
-        self->mYOff = ( yGutter * 0.5f ) - ( tileHeight * 0.25f );
-	}
+    self->mShape = HEX_COLUMN_SHAPE;
+	tileWidth = hRad * 6.0f /2;
+	tileHeight = hRad * ( float )( M_SQRT3 * 2.0 );
+	self->mCellWidth = tileWidth;
+	self->mCellHeight = tileHeight;
+    self->mXOff = ( xGutter * 0.5f );
+    self->mYOff = ( yGutter * 0.5f );
 
 	self->mWidth = width;
 	self->mHeight = height;
@@ -1159,6 +1191,7 @@ void MOAIGridSpace::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "getTileSize",		_getTileSize },
 		{ "initDiamondGrid",	_initDiamondGrid },
 		{ "initHexGrid",		_initHexGrid },
+		{ "initHexColumnGrid",	_initHexColumnGrid },
 		{ "initObliqueGrid",	_initObliqueGrid },
 		{ "initRectGrid",		_initRectGrid },
 		{ "locToCellAddr",		_locToCellAddr },

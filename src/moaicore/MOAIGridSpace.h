@@ -101,6 +101,7 @@ protected:
 	static int		_getTileSize		( lua_State* L );
 	static int		_initDiamondGrid	( lua_State* L );
 	static int		_initHexGrid		( lua_State* L );
+	static int		_initHexColumnGrid  ( lua_State* L );
 	static int		_initObliqueGrid	( lua_State* L );
 	static int		_initRectGrid		( lua_State* L );
 	static int		_locToCellAddr		( lua_State* L );
